@@ -93,6 +93,14 @@ struct ContentView: View {
                     }
                 }
             }
+            .fileExporter(
+                isPresented: $showingExporter,
+                document: TranscriptDocument(transcription: exportableTranscription),
+                contentType: .plainText,
+                defaultFilename: selectedVideoURL?.deletingPathExtension().lastPathComponent ?? "transcript"
+            ) { result in
+                handleExport(result)
+            }
             
             // Loading overlay
             if transcriptionManager.isTranscribing {
@@ -105,14 +113,6 @@ struct ContentView: View {
             allowsMultipleSelection: false
         ) { result in
             handleFileSelection(result)
-        }
-        .fileExporter(
-            isPresented: $showingExporter,
-            document: TranscriptDocument(transcription: exportableTranscription),
-            contentType: .plainText,
-            defaultFilename: selectedVideoURL?.deletingPathExtension().lastPathComponent ?? "transcript"
-        ) { result in
-            handleExport(result)
         }
         .fileExporter(
             isPresented: $showingSRTExporter,
