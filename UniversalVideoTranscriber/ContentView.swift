@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import UniformTypeIdentifiers
 
 struct ContentView: View {
     @StateObject private var transcriptionManager = TranscriptionManager()
@@ -733,36 +734,38 @@ struct TranscriptItemRow: View {
 struct TranscriptDocument: FileDocument {
     static var readableContentTypes: [UTType] { [.plainText] }
     
-    let transcription: TranscriptionData?
+    var text: String = ""
     
     init(transcription: TranscriptionData?) {
-        self.transcription = transcription
+        guard let transcription = transcription else { return }
+        
+        var content = "Lithuanian Video Transcription\n"
+        content += "Video: \(transcription.videoURL.lastPathComponent)\n"
+        content += "Created: \(transcription.createdAt.formatted())\n"
+        content += "Duration: \(Self.formatDuration(transcription.videoDuration))\n"
+        content += "\n" + String(repeating: "=", count: 60) + "\n\n"
+        
+        for item in transcription.items {
+            content += "[\(item.formattedTimestamp)] \(item.text)\n"
+        }
+        
+        self.text = content
     }
     
     init(configuration: ReadConfiguration) throws {
-        self.transcription = nil
+        guard let data = configuration.file.regularFileContents,
+              let string = String(data: data, encoding: .utf8) else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        text = string
     }
     
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-        guard let transcription = transcription else {
-            throw CocoaError(.fileWriteUnknown)
-        }
-        
-        var text = "Lithuanian Video Transcription\n"
-        text += "Video: \(transcription.videoURL.lastPathComponent)\n"
-        text += "Created: \(transcription.createdAt.formatted())\n"
-        text += "Duration: \(formatDuration(transcription.videoDuration))\n"
-        text += "\n" + String(repeating: "=", count: 60) + "\n\n"
-        
-        for item in transcription.items {
-            text += "[\(item.formattedTimestamp)] \(item.text)\n"
-        }
-        
         let data = text.data(using: .utf8) ?? Data()
         return FileWrapper(regularFileWithContents: data)
     }
     
-    private func formatDuration(_ duration: TimeInterval) -> String {
+    private static func formatDuration(_ duration: TimeInterval) -> String {
         let hours = Int(duration) / 3600
         let minutes = Int(duration) % 3600 / 60
         let seconds = Int(duration) % 60
