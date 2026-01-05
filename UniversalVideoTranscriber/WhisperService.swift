@@ -2,8 +2,8 @@
 //  WhisperService.swift
 //  UniversalVideoTranscriber
 //
-//  OpenAI Whisper integration for FREE Lithuanian transcription
-//  Uses whisper.cpp for native macOS performance
+//  OpenAI Whisper integration for universal video transcription
+//  Uses whisper.cpp for native macOS performance with Medium model
 //
 
 import Foundation
@@ -32,45 +32,14 @@ class WhisperService: ObservableObject {
         checkModelAvailability()
     }
 
-    enum WhisperModel: String, CaseIterable {
-        case tiny = "tiny"
-        case base = "base"
-        case small = "small"
-        case medium = "medium"
-        case large = "large-v3"
-
-        var displayName: String {
-            switch self {
-            case .tiny: return "Tiny (75MB, Fast, ~85% accuracy)"
-            case .base: return "Base (142MB, Fast, ~88% accuracy)"
-            case .small: return "Small (466MB, Medium, ~92% accuracy)"
-            case .medium: return "Medium (1.5GB, Slower, ~94% accuracy) ⭐️ Recommended"
-            case .large: return "Large (3GB, Slowest, ~95% accuracy)"
-            }
-        }
-
-        var fileName: String {
-            return "ggml-\(self.rawValue).bin"
-        }
-
-        var downloadURL: String {
-            return "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/\(fileName)"
-        }
-
-        var sizeEstimate: String {
-            switch self {
-            case .tiny: return "75 MB"
-            case .base: return "142 MB"
-            case .small: return "466 MB"
-            case .medium: return "1.5 GB"
-            case .large: return "3.0 GB"
-            }
-        }
-    }
+    // Fixed to Medium model for best quality/performance balance
+    private static let mediumModelFileName = "ggml-medium.bin"
+    private static let mediumModelURL = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin"
+    static let mediumModelSize = "1.5 GB"
 
     // Supported languages (99 languages!)
     static let supportedLanguages: [String: String] = [
-        "lt": "Lithuanian 🇱🇹",
+        "auto": "Auto-detect",
         "en": "English",
         "es": "Spanish",
         "fr": "French",
@@ -101,19 +70,18 @@ class WhisperService: ObservableObject {
         "sl": "Slovenian",
         "et": "Estonian",
         "lv": "Latvian",
+        "lt": "Lithuanian",
         // ... 99 languages total!
-        "auto": "Auto-detect"
     ]
 
     func checkModelAvailability() {
-        // Check if GGML model file exists in app directory
-        let selectedModel = SettingsManager.shared.whisperModel
-        let modelPath = modelDirectory.appendingPathComponent(selectedModel.fileName)
+        // Check if Medium model file exists in app directory
+        let modelPath = modelDirectory.appendingPathComponent(WhisperService.mediumModelFileName)
         isModelDownloaded = FileManager.default.fileExists(atPath: modelPath.path)
     }
 
-    func deleteModel(model: WhisperModel) throws {
-        let modelPath = modelDirectory.appendingPathComponent(model.fileName)
+    func deleteMediumModel() throws {
+        let modelPath = modelDirectory.appendingPathComponent(WhisperService.mediumModelFileName)
 
         guard FileManager.default.fileExists(atPath: modelPath.path) else {
             // Model doesn't exist, nothing to delete
@@ -125,17 +93,17 @@ class WhisperService: ObservableObject {
         statusMessage = "Model deleted successfully"
     }
 
-    func downloadModel(model: WhisperModel) async throws {
-        print("📥 [DOWNLOAD] Starting download for model: \(model.displayName)")
+    func downloadMediumModel() async throws {
+        print("📥 [DOWNLOAD] Starting download for Whisper Medium model")
 
         // Update both local and global download state
         await MainActor.run {
-            statusMessage = "Downloading Whisper \(model.displayName)..."
+            statusMessage = "Downloading Whisper Medium model..."
             progress = 0.0
-            DownloadStateManager.shared.startDownload(model: model)
+            DownloadStateManager.shared.startDownload()
         }
 
-        let modelURL = modelDirectory.appendingPathComponent(model.fileName)
+        let modelURL = modelDirectory.appendingPathComponent(WhisperService.mediumModelFileName)
         print("📥 [DOWNLOAD] Target path: \(modelURL.path)")
 
         // Check if already exists
@@ -149,8 +117,8 @@ class WhisperService: ObservableObject {
             return
         }
 
-        guard let url = URL(string: model.downloadURL) else {
-            print("❌ [DOWNLOAD] Invalid download URL: \(model.downloadURL)")
+        guard let url = URL(string: WhisperService.mediumModelURL) else {
+            print("❌ [DOWNLOAD] Invalid download URL: \(WhisperService.mediumModelURL)")
             await MainActor.run {
                 DownloadStateManager.shared.failDownload(error: "Invalid download URL")
             }
@@ -169,7 +137,7 @@ class WhisperService: ObservableObject {
                     // Update global download state
                     DownloadStateManager.shared.updateProgress(
                         downloadProgress,
-                        message: "Downloading \(model.displayName): \(Int(downloadProgress * 100))%"
+                        message: "Downloading Whisper Medium: \(Int(downloadProgress * 100))%"
                     )
                 }
             },
@@ -233,6 +201,21 @@ class WhisperService: ObservableObject {
             }
             throw error
         }
+    }
+
+    /// Auto-download Medium model if not already present
+    /// Returns true if download was needed and completed, false if already exists
+    func autoDownloadMediumModelIfNeeded() async throws -> Bool {
+        checkModelAvailability()
+
+        guard !isModelDownloaded else {
+            print("📥 [AUTO-DOWNLOAD] Medium model already exists, skipping download")
+            return false
+        }
+
+        print("📥 [AUTO-DOWNLOAD] Medium model not found, starting auto-download")
+        try await downloadMediumModel()
+        return true
     }
 
     func transcribe(
@@ -390,8 +373,7 @@ class WhisperService: ObservableObject {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: whisperPath)
 
-        let selectedModel = SettingsManager.shared.whisperModel
-        let modelPath = modelDirectory.appendingPathComponent(selectedModel.fileName)
+        let modelPath = modelDirectory.appendingPathComponent(WhisperService.mediumModelFileName)
 
         // Output file (without extension, whisper-cli will add .json)
         let outputFile = modelDirectory.appendingPathComponent("temp_audio")
@@ -414,22 +396,18 @@ class WhisperService: ObservableObject {
             "--no-fallback"  // Don't fallback to CPU if GPU available
         ]
 
-        // Add strict quality parameters only for smaller models
-        // Large/medium models can hang with strict thresholds
-        if selectedModel != .large && selectedModel != .medium {
-            arguments.append(contentsOf: [
-                "-et", "3.0",   // Higher entropy threshold = fail on hallucinations
-                "-lpt", "-0.5"  // Log probability threshold to reject low confidence
-            ])
-            print("🎤 [WHISPER] Using strict quality parameters for \(selectedModel.rawValue) model")
-        } else {
-            print("🎤 [WHISPER] Using relaxed parameters for \(selectedModel.rawValue) model to avoid hanging")
-        }
+        // Use relaxed quality parameters for Medium model to avoid hanging
+        print("🎤 [WHISPER] Using relaxed parameters for Medium model to avoid hanging")
 
-        // Add language if not auto-detect
-        if language != "auto" {
-            arguments.append("-l")
+        // Add language parameter (always pass to ensure transcribe mode, not translate)
+        arguments.append("-l")
+        if language == "auto" {
+            // For auto-detect: explicitly pass "auto" to ensure detection + transcription (not translation)
+            arguments.append("auto")
+            print("🎤 [WHISPER] Using auto-detect mode (will transcribe in detected language)")
+        } else {
             arguments.append(language)
+            print("🎤 [WHISPER] Using language: \(language)")
         }
 
         process.arguments = arguments

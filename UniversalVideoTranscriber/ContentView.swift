@@ -41,30 +41,17 @@ struct ContentView: View {
 
     // MARK: - Language Organization
 
-    private var commonAssemblyAILanguages: [String] {
-        ["en", "es", "fr", "de", "it", "pt", "nl", "lt"]  // Lithuanian included in common
+    private var commonLanguages: [String] {
+        ["auto", "en", "es", "fr", "de", "it", "pt", "nl", "lt"]  // Auto-detect first, then common languages
     }
 
-    private var otherAssemblyAILanguages: [String] {
-        let all = AssemblyAIService.supportedLanguages.keys.sorted { key1, key2 in
-            let name1 = AssemblyAIService.supportedLanguages[key1] ?? key1
-            let name2 = AssemblyAIService.supportedLanguages[key2] ?? key2
-            return name1 < name2
-        }
-        return all.filter { !commonAssemblyAILanguages.contains($0) }
-    }
-
-    private var commonWhisperLanguages: [String] {
-        ["en", "es", "fr", "de", "it", "pt", "nl", "lt", "auto"]  // Lithuanian + auto-detect
-    }
-
-    private var otherWhisperLanguages: [String] {
+    private var otherLanguages: [String] {
         let all = WhisperService.supportedLanguages.keys.sorted { key1, key2 in
             let name1 = WhisperService.supportedLanguages[key1] ?? key1
             let name2 = WhisperService.supportedLanguages[key2] ?? key2
             return name1 < name2
         }
-        return all.filter { !commonWhisperLanguages.contains($0) }
+        return all.filter { !commonLanguages.contains($0) }
     }
 
     var body: some View {
@@ -138,8 +125,18 @@ struct ContentView: View {
             Text(errorMessage)
         }
         .task {
-            if transcriptionManager.authorizationStatus == .notDetermined {
-                await transcriptionManager.requestAuthorization()
+            // Auto-download Whisper Medium model on first launch
+            if !settings.hasAttemptedAutoDownload {
+                do {
+                    let downloaded = try await WhisperService.shared.autoDownloadMediumModelIfNeeded()
+                    if downloaded {
+                        print("Auto-download completed successfully")
+                    }
+                    settings.hasAttemptedAutoDownload = true
+                } catch {
+                    print("Auto-download failed: \(error)")
+                    // Don't block the app if download fails - user can retry in Settings
+                }
             }
         }
     }
@@ -177,155 +174,32 @@ struct ContentView: View {
                 Divider()
                     .frame(height: 28)
 
-            HStack(spacing: 10) {
-                Text("Engine:")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.secondary)
-
-                HStack(spacing: 8) {
-                    switch settings.transcriptionProvider {
-                    case .apple:
-                        Image(systemName: "applelogo")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white)
-                        Text("Apple Speech")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.white)
-                    case .assemblyAI:
-                        Image(systemName: "cloud.fill")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white)
-                        Text("AssemblyAI")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.white)
-                    case .whisper:
-                        Image(systemName: "waveform")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white)
-                        Text("Whisper (\(settings.whisperModel.rawValue.capitalized))")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.white)
-                    }
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(
-                            LinearGradient(
-                                colors: providerGradientColors,
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                )
-                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-            }
-
-            Divider()
-                .frame(height: 28)
 
             HStack(spacing: 10) {
                 Text("Language:")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.secondary)
 
-                switch settings.transcriptionProvider {
-                case .apple:
-                    Picker("", selection: $transcriptionManager.selectedLocale) {
-                        ForEach(transcriptionManager.availableLocales, id: \.identifier) { locale in
-                            Text(displayName(for: locale))
-                                .tag(locale)
+                Picker("", selection: $transcriptionManager.selectedLanguage) {
+                    // Common languages section
+                    Section(header: Text("Common Languages")) {
+                        ForEach(commonLanguages, id: \.self) { code in
+                            Text(WhisperService.supportedLanguages[code] ?? code).tag(code)
                         }
                     }
-                    .frame(width: 180)
-                    .onChange(of: transcriptionManager.selectedLocale) { _, newLocale in
-                        transcriptionManager.setLocale(newLocale)
-                    }
 
-                case .assemblyAI:
-                    Picker("", selection: $transcriptionManager.assemblyAILanguage) {
-                        // Common languages section
-                        Section(header: Text("Common Languages")) {
-                            ForEach(commonAssemblyAILanguages, id: \.self) { code in
-                                Text(AssemblyAIService.supportedLanguages[code] ?? code).tag(code)
-                            }
+                    Divider()
+
+                    // All other languages alphabetically
+                    Section(header: Text("Other Languages")) {
+                        ForEach(otherLanguages, id: \.self) { code in
+                            Text(WhisperService.supportedLanguages[code] ?? code).tag(code)
                         }
-
-                        Divider()
-
-                        // All other languages alphabetically
-                        Section(header: Text("Other Languages")) {
-                            ForEach(otherAssemblyAILanguages, id: \.self) { code in
-                                Text(AssemblyAIService.supportedLanguages[code] ?? code).tag(code)
-                            }
-                        }
-                    }
-                    .frame(width: 180)
-
-                case .whisper:
-                    Picker("", selection: $transcriptionManager.assemblyAILanguage) {
-                        // Common languages section
-                        Section(header: Text("Common Languages")) {
-                            ForEach(commonWhisperLanguages, id: \.self) { code in
-                                Text(WhisperService.supportedLanguages[code] ?? code).tag(code)
-                            }
-                        }
-
-                        Divider()
-
-                        // All other languages alphabetically
-                        Section(header: Text("Other Languages")) {
-                            ForEach(otherWhisperLanguages, id: \.self) { code in
-                                Text(WhisperService.supportedLanguages[code] ?? code).tag(code)
-                            }
-                        }
-                    }
-                    .frame(width: 180)
-                }
-            }
-
-            // Whisper model selector (only for Whisper provider)
-            if settings.transcriptionProvider == .whisper {
-                Divider()
-                    .frame(height: 28)
-
-                HStack(spacing: 10) {
-                    Text("Model:")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.secondary)
-
-                    Picker("", selection: $settings.whisperModel) {
-                        ForEach(WhisperService.WhisperModel.allCases, id: \.self) { model in
-                            Text(model.rawValue.capitalized).tag(model)
-                        }
-                    }
-                    .frame(width: 120)
-                    .onChange(of: settings.whisperModel) {
-                        WhisperService.shared.checkModelAvailability()
-                    }
-
-                    // Show download warning if model not downloaded
-                    if !WhisperService.shared.isModelDownloaded {
-                        Button(action: { showingSettings = true }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .foregroundColor(.orange)
-                                Image(systemName: "arrow.down.circle")
-                                    .foregroundColor(.blue)
-                            }
-                            .font(.system(size: 12))
-                        }
-                        .buttonStyle(.plain)
-                        .help("Model not downloaded - click to open Settings")
-                    } else {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                            .font(.system(size: 12))
-                            .help("Model downloaded and ready")
                     }
                 }
+                .frame(width: 180)
             }
+
 
             // Download indicator (persistent across Settings closing)
             if downloadState.isDownloading {
@@ -338,7 +212,7 @@ struct ContentView: View {
                         .controlSize(.small)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Downloading \(downloadState.downloadingModel?.rawValue.capitalized ?? "Model")...")
+                        Text("Downloading Whisper Medium...")
                             .font(.system(size: 11, weight: .medium))
                             .foregroundColor(.primary)
 
@@ -408,7 +282,7 @@ struct ContentView: View {
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
-                    .disabled(transcriptionManager.isTranscribing || transcriptionManager.authorizationStatus != .authorized)
+                    .disabled(transcriptionManager.isTranscribing)
                 }
 
                 if !transcriptionManager.transcriptItems.isEmpty {
@@ -460,17 +334,6 @@ struct ContentView: View {
         )
     }
 
-    private var providerGradientColors: [Color] {
-        switch settings.transcriptionProvider {
-        case .apple:
-            return [.blue, .blue.opacity(0.8)]
-        case .assemblyAI:
-            return [.green, .green.opacity(0.8)]
-        case .whisper:
-            return [.purple, .purple.opacity(0.8)]
-        }
-    }
-    
     // MARK: - Right Panel
 
     private var rightPanelView: some View {
@@ -647,11 +510,6 @@ struct ContentView: View {
     private func startTranscription() {
         guard let videoURL = selectedVideoURL else { return }
 
-        if transcriptionManager.authorizationStatus != .authorized {
-            showingPermissionAlert = true
-            return
-        }
-
         transcriptionStartTime = Date()
 
         Task {
@@ -687,10 +545,6 @@ struct ContentView: View {
         }
     }
 
-    private func displayName(for locale: Locale) -> String {
-        let languageName = Locale.current.localizedString(forIdentifier: locale.identifier) ?? locale.identifier
-        return "\(languageName) (\(locale.identifier))"
-    }
 }
 
 // MARK: - Transcript Item Row

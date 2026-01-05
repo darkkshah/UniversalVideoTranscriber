@@ -13,18 +13,16 @@ class DownloadStateManager: ObservableObject {
 
     @Published var isDownloading = false
     @Published var downloadProgress: Double = 0.0
-    @Published var downloadingModel: WhisperService.WhisperModel?
     @Published var downloadError: String?
     @Published var statusMessage: String = ""
 
     private init() {}
 
-    func startDownload(model: WhisperService.WhisperModel) {
+    func startDownload() {
         isDownloading = true
-        downloadingModel = model
         downloadProgress = 0.0
         downloadError = nil
-        statusMessage = "Starting download..."
+        statusMessage = "Starting download of Whisper Medium model..."
     }
 
     func updateProgress(_ progress: Double, message: String) {
@@ -35,21 +33,18 @@ class DownloadStateManager: ObservableObject {
     func completeDownload() {
         isDownloading = false
         downloadProgress = 1.0
-        statusMessage = "Download complete"
-        downloadingModel = nil
+        statusMessage = "Whisper Medium model downloaded successfully"
     }
 
     func failDownload(error: String) {
         isDownloading = false
         downloadError = error
-        statusMessage = "Download failed"
-        downloadingModel = nil
+        statusMessage = "Download failed: \(error)"
     }
 
     func resetState() {
         isDownloading = false
         downloadProgress = 0.0
-        downloadingModel = nil
         downloadError = nil
         statusMessage = ""
     }

@@ -101,7 +101,7 @@ struct VideoPlayerView: View {
             // Only seek if the time difference is significant (more than 0.5 seconds)
             // This prevents continuous seeking during normal playback
             if abs(newValue - oldValue) > 0.5 {
-                seekToTime(newValue, shouldPlay: true)
+                seekToTime(newValue, shouldPlay: false)  // Don't auto-play on seek
             }
         }
     }
