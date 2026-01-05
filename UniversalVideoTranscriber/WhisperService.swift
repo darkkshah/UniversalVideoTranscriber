@@ -373,6 +373,8 @@ class WhisperService: ObservableObject {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: whisperPath)
 
+        let settings = SettingsManager.shared
+
         let modelPath = modelDirectory.appendingPathComponent(WhisperService.mediumModelFileName)
 
         // Output file (without extension, whisper-cli will add .json)
@@ -390,8 +392,7 @@ class WhisperService: ObservableObject {
             "-oj",  // Output JSON
             "-of", outputFile.path,  // Output file
             "-t", "\(optimalThreads)",  // Use optimal threads for CPU
-            "-tp", "0.0",  // Temperature 0 = force accuracy, no randomness
-            "-sns",  // Suppress non-speech tokens (music, noise)
+            "-tp", String(format: "%.1f", settings.whisperTemperature),  // Temperature (user-adjustable)
             "-p", "1",  // Enable progress output
             "--no-fallback"  // Don't fallback to CPU if GPU available
         ]
@@ -408,6 +409,16 @@ class WhisperService: ObservableObject {
         } else {
             arguments.append(language)
             print("🎤 [WHISPER] Using language: \(language)")
+        }
+
+        // Conditional parameters based on user settings
+        if settings.whisperSuppressNonSpeech {
+            arguments.append("-sns")  // Suppress non-speech tokens (music, noise)
+        }
+
+        if settings.whisperBeamSize > 1 {
+            arguments.append("-bs")
+            arguments.append("\(settings.whisperBeamSize)")
         }
 
         process.arguments = arguments

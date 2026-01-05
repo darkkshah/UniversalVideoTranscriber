@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var showingExporter = false
     @State private var exportFormat: ExportFormat = .txt
     @State private var showingSettings = false
+    @State private var showingHelp = false
     @State private var currentTranscription: TranscriptionData?
 
     enum ExportFormat {
@@ -108,6 +109,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
+        }
+        .sheet(isPresented: $showingHelp) {
+            HelpView()
         }
         .alert("Permission Required", isPresented: $showingPermissionAlert) {
             Button("Open Settings") {
@@ -274,6 +278,7 @@ struct ContentView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .keyboardShortcut("o", modifiers: .command)
 
                 if selectedVideoURL != nil {
                     Button(action: { startTranscription() }) {
@@ -294,6 +299,7 @@ struct ContentView: View {
                         }) {
                             Label("As Text", systemImage: "doc.text")
                         }
+                        .keyboardShortcut("e", modifiers: [.command, .shift])
 
                         Button(action: {
                             print("DEBUG: Export as SRT button pressed")
@@ -316,6 +322,15 @@ struct ContentView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
+                .keyboardShortcut(",", modifiers: .command)
+
+                Button(action: { showingHelp = true }) {
+                    Label("Help", systemImage: "questionmark.circle")
+                        .font(.system(size: 13, weight: .medium))
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .keyboardShortcut("?", modifiers: .command)
 
                 Spacer()
             }

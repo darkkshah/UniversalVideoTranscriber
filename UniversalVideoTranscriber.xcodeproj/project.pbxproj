@@ -29,6 +29,10 @@
 		E152C5842F0AC01800FCFC67 /* TranscriptEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E152C5822F0AC01800FCFC67 /* TranscriptEditorView.swift */; };
 		E152C5852F0AC01800FCFC67 /* SRTDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = E152C5802F0AC01800FCFC67 /* SRTDocument.swift */; };
 		E152C5862F0AC01800FCFC67 /* DownloadStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E152C57F2F0AC01800FCFC67 /* DownloadStateManager.swift */; };
+		E1988A6E2F0C100B009E6FBC /* AboutTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1988A6A2F0C100B009E6FBC /* AboutTabView.swift */; };
+		E1988A6F2F0C100B009E6FBC /* AdvancedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1988A6B2F0C100B009E6FBC /* AdvancedTabView.swift */; };
+		E1988A702F0C100B009E6FBC /* GeneralTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1988A6C2F0C100B009E6FBC /* GeneralTabView.swift */; };
+		E1988A712F0C100B009E6FBC /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1988A6D2F0C100B009E6FBC /* HelpView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +61,10 @@
 		E152C5802F0AC01800FCFC67 /* SRTDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRTDocument.swift; sourceTree = "<group>"; };
 		E152C5812F0AC01800FCFC67 /* SRTExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRTExporter.swift; sourceTree = "<group>"; };
 		E152C5822F0AC01800FCFC67 /* TranscriptEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptEditorView.swift; sourceTree = "<group>"; };
+		E1988A6A2F0C100B009E6FBC /* AboutTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutTabView.swift; sourceTree = "<group>"; };
+		E1988A6B2F0C100B009E6FBC /* AdvancedTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedTabView.swift; sourceTree = "<group>"; };
+		E1988A6C2F0C100B009E6FBC /* GeneralTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralTabView.swift; sourceTree = "<group>"; };
+		E1988A6D2F0C100B009E6FBC /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +97,10 @@
 		A1000001000000000000002 /* UniversalVideoTranscriber */ = {
 			isa = PBXGroup;
 			children = (
+				E1988A6A2F0C100B009E6FBC /* AboutTabView.swift */,
+				E1988A6B2F0C100B009E6FBC /* AdvancedTabView.swift */,
+				E1988A6C2F0C100B009E6FBC /* GeneralTabView.swift */,
+				E1988A6D2F0C100B009E6FBC /* HelpView.swift */,
 				E152C57F2F0AC01800FCFC67 /* DownloadStateManager.swift */,
 				E152C5802F0AC01800FCFC67 /* SRTDocument.swift */,
 				E152C5812F0AC01800FCFC67 /* SRTExporter.swift */,
@@ -206,6 +218,10 @@
 				A1000009000000000000001 /* TranscriptItem.swift in Sources */,
 				A100000B000000000000001 /* TranscriptionManager.swift in Sources */,
 				E152C5832F0AC01800FCFC67 /* SRTExporter.swift in Sources */,
+				E1988A6E2F0C100B009E6FBC /* AboutTabView.swift in Sources */,
+				E1988A6F2F0C100B009E6FBC /* AdvancedTabView.swift in Sources */,
+				E1988A702F0C100B009E6FBC /* GeneralTabView.swift in Sources */,
+				E1988A712F0C100B009E6FBC /* HelpView.swift in Sources */,
 				E152C5842F0AC01800FCFC67 /* TranscriptEditorView.swift in Sources */,
 				E152C5852F0AC01800FCFC67 /* SRTDocument.swift in Sources */,
 				E152C5862F0AC01800FCFC67 /* DownloadStateManager.swift in Sources */,
