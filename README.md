@@ -8,6 +8,7 @@
 ## Key Features
 
 *   **Whisper Medium Model:** High-accuracy local transcription (~94% accuracy, 1.5GB)
+*   **Advanced Parameter Tuning:** Fine-tune transcription quality with temperature, beam size, and noise suppression controls
 *   **99 Languages Supported:** Transcribe videos in 99 different languages with automatic language detection
 *   **Auto-Detect Intelligence:** Automatically detects the spoken language and transcribes in that language (NOT translated to English)
 *   **Privacy-First:** All transcription runs locally on your Mac - no cloud services, no data sent externally
@@ -16,6 +17,7 @@
 *   **Transcript Editor:** Full-featured editor to merge, split, delete, and correct transcript segments
 *   **Search:** Full-text search within generated transcripts
 *   **Export:** Export transcripts as plain text (`.txt`) or SubRip Subtitles (`.srt`)
+*   **Comprehensive Help:** Built-in help system with keyboard shortcuts and troubleshooting guide
 *   **Fast Processing:** ~30 seconds to transcribe a 5-minute video on modern Macs
 
 ## How It Works
@@ -49,11 +51,12 @@
 ### Core Components
 
 *   **`TranscriptionManager`:** Central coordinator for transcription workflow
-*   **`WhisperService`:** Manages local `whisper-cli` execution, automatic model download, and audio conversion
+*   **`WhisperService`:** Manages local `whisper-cli` execution, automatic model download, and audio conversion with dynamic parameter support
 *   **`DownloadStateManager`:** Global singleton for tracking model download progress
-*   **`SettingsManager`:** Minimal settings management (first-launch tracking)
+*   **`SettingsManager`:** Settings management with advanced Whisper parameters (temperature, beam size, suppress non-speech)
 *   **`VideoPlayerView`:** AVKit-based video player with subtitle overlay
 *   **`TranscriptEditorView`:** Full-featured transcript editing interface
+*   **`HelpView`:** Comprehensive help system with usage guide and troubleshooting
 *   **`PersistenceManager`:** JSON-based storage for transcriptions
 
 ## Prerequisites
@@ -130,6 +133,21 @@ On first launch, the app will automatically:
 
 ### Advanced Features
 
+**Advanced Whisper Parameters (Settings → Advanced):**
+- **Temperature (0.0-1.0):** Control transcription randomness
+  - Lower (0.0-0.3): More accurate, deterministic results
+  - Higher (0.5-0.8): Better at capturing unclear speech
+  - Default: 0.0 (maximum accuracy)
+- **Suppress Non-Speech Tokens (On/Off):** Filter background music and noise
+  - Keep ON for clean transcripts
+  - Turn OFF if speech is being incorrectly filtered
+  - Default: ON
+- **Beam Size (1-8):** Control search width during decoding
+  - Higher values (5-8): Better quality, slower processing
+  - Lower values (1-3): Faster processing, lower quality
+  - Default: 5 (balanced)
+- **Reset to Defaults:** Quick restore of optimal settings
+
 **Subtitle Overlay:**
 - Toggle the "Subtitles" button in video player controls
 - Subtitles display synchronized with video playback
@@ -140,10 +158,25 @@ On first launch, the app will automatically:
 - Enter keywords to find specific parts of the transcript
 - Click results to jump to that timestamp in the video
 
+**Keyboard Shortcuts:**
+- **Cmd+O:** Select Video
+- **Cmd+,:** Open Settings
+- **Cmd+?:** Show Help
+- **Cmd+Shift+E:** Export Text
+- **Space:** Play/Pause Video
+
 **Settings (Cmd+,):**
-- View Whisper Medium model status
-- Re-download model if corrupted or outdated
-- View information about offline processing and storage location
+Three tabs for organized configuration:
+- **General:** Whisper model management (download/re-download)
+- **Advanced:** Fine-tune transcription parameters
+- **About:** Version info, credits, copyright
+
+**Help System (Cmd+?):**
+- Comprehensive getting started guide
+- Full feature documentation
+- Keyboard shortcuts reference
+- Advanced settings explanations
+- Troubleshooting common issues
 
 ## Language Support
 
@@ -190,18 +223,37 @@ The Whisper Medium model supports 99 languages including:
 - Try re-selecting the video
 
 **Transcription fails:**
-- Verify Whisper Medium model is downloaded (check Settings)
+- Verify Whisper Medium model is downloaded (check Settings → General)
 - Ensure video has audio track
-- Try re-downloading model via Settings → Re-download Model
+- Try re-downloading model via Settings → General → Re-download Model
+
+**Transcription is inaccurate:**
+- Adjust **Advanced Settings** (Settings → Advanced):
+  - Increase **Beam Size** to 8 for maximum quality
+  - Adjust **Temperature** (try 0.5-0.8 if speech is unclear)
+  - Ensure correct **Language** is selected (or use Auto-detect)
+
+**Transcription misses words or cuts out speech:**
+- Turn **OFF** "Suppress Non-Speech Tokens" in Settings → Advanced
+- This filter may be removing speech that sounds like noise
 
 **Auto-detect translates to English (instead of transcribing):**
 - This is now fixed in latest version (v1.1+)
 - Update to latest version or manually select the language
 
+**App is slow or unresponsive:**
+- Whisper transcription is CPU-intensive
+- Higher **Beam Size** values (8) significantly increase processing time
+- Try lowering Beam Size to 3-5 in Settings → Advanced for faster results
+
 **First launch download stuck:**
 - Check internet connection
 - Ensure 1.5GB free disk space
 - Restart app and try again
+
+**Need help?**
+- Press **Cmd+?** to open the built-in Help system
+- Full documentation with troubleshooting guide available in-app
 
 ## Contribution & Licence
 
